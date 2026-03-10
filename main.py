@@ -158,9 +158,19 @@ def get_stats(db: Session = Depends(get_db)):
     }
 
 
-@app.post("/api/admin/login")
+app.post("/api/admin/login")
 def admin_login(credentials: AdminLogin, db: Session = Depends(get_db)):
-    admin = db.query(AdminUser).filter(AdminUser.username == credentials.username).first()
-    if not admin or credentials.password != admin.password:
+    import bcrypt
+    admin = db.query(AdminUser).filter(
+        (AdminUser.username == credentials.username) |
+        (AdminUser.email == credentials.username)
+    ).first()
+    if not admin:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"message": "Login successful", "username": admin.username}
+    try:
+        if bcrypt.checkpw(credentials.password.encode(), admin.password.encode()):
+            return {"message": "Login successful", "username": admin.username or admin.email}
+    except:
+        if credentials.password == admin.password:
+            return {"message": "Login successful", "username": admin.username or admin.email}
+    raise HTTPException(status_code=401, detail="Invalid credentials")
