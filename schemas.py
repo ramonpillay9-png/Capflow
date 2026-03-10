@@ -22,6 +22,14 @@ class ApplicationCreate(BaseModel):
         orm_mode = True
 
 
+class ApplicationUpdate(BaseModel):
+    status: Optional[str] = None
+    risk_profile: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
 class ApplicationOut(BaseModel):
     id: int
     business_name: str
