@@ -54,6 +54,17 @@ class ApplicationOut(BaseModel):
         orm_mode = True
 
 
+class LenderCreate(BaseModel):
+    name: str
+    risk_appetite: str
+    min_rate: float
+    max_rate: float
+    available_capital: float
+
+    class Config:
+        orm_mode = True
+
+
 class LenderOut(BaseModel):
     id: int
     name: str
@@ -81,6 +92,20 @@ class AdminLogin(BaseModel):
     password: str
 
 
+class AdminOut(BaseModel):
+    id: int
+    username: str
+    email: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class StatusUpdate(BaseModel):
     status: str
 
@@ -90,3 +115,17 @@ class PaymentRelease(BaseModel):
     lender_ids: List[int]
     amount: float
     fee_percentage: float = 2.5
+
+
+class PaymentAssignmentOut(BaseModel):
+    id: int
+    application_id: int
+    lender_id: int
+    amount: float
+    fee: float
+    net_amount: float
+    status: str
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
