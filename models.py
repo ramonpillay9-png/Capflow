@@ -43,9 +43,12 @@ class AdminUser(Base):
     __tablename__ = "admin_users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True)
-    password = Column(String)
+    username = Column(String, nullable=True)
+    password = Column(String, nullable=True)
     email = Column(String, nullable=True)
+    password_hash = Column(String, nullable=True)
+    name = Column(String, nullable=True)
+    role = Column(String, nullable=True)
 
 
 class PaymentAssignment(Base):
