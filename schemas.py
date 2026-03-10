@@ -1,5 +1,5 @@
-from pydantic import BaseModel, field_validator
-from typing import Optional
+from pydantic import BaseModel
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -18,7 +18,8 @@ class ApplicationCreate(BaseModel):
     collateral: Optional[str] = None
     credit_score: Optional[int] = None
 
-    model_config = {"from_attributes": True}
+    class Config:
+        orm_mode = True
 
 
 class ApplicationOut(BaseModel):
@@ -41,7 +42,8 @@ class ApplicationOut(BaseModel):
     reference_number: str
     created_at: datetime
 
-    model_config = {"from_attributes": True}
+    class Config:
+        orm_mode = True
 
 
 class LenderOut(BaseModel):
@@ -54,7 +56,8 @@ class LenderOut(BaseModel):
     deployed_capital: float
     active: bool
 
-    model_config = {"from_attributes": True}
+    class Config:
+        orm_mode = True
 
 
 class LenderUpdate(BaseModel):
@@ -76,6 +79,6 @@ class StatusUpdate(BaseModel):
 
 class PaymentRelease(BaseModel):
     application_id: int
-    lender_ids: list[int]
+    lender_ids: List[int]
     amount: float
     fee_percentage: float = 2.5
