@@ -158,7 +158,7 @@ def get_stats(db: Session = Depends(get_db)):
     }
 
 
-app.post("/api/admin/login")
+@app.post("/api/admin/login")
 def admin_login(credentials: AdminLogin, db: Session = Depends(get_db)):
     import bcrypt
     admin = db.query(AdminUser).filter(
@@ -168,9 +168,13 @@ def admin_login(credentials: AdminLogin, db: Session = Depends(get_db)):
     if not admin:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     try:
-        if bcrypt.checkpw(credentials.password.encode(), admin.password.encode()):
-            return {"message": "Login successful", "username": admin.username or admin.email}
-    except:
-        if credentials.password == admin.password:
-            return {"message": "Login successful", "username": admin.username or admin.email}
+        # Try password_hash field first (used by seed.py)
+        stored = admin.password_hash or admin.password
+        if stored and bcrypt.checkpw(credentials.password.encode(), stored.encode()):
+            return {"message": "Login successful", "username": admin.email or admin.username}
+    except Exception as e:
+        # Fallback plain text check
+        stored = admin.password_hash or admin.password
+        if stored == credentials.password:
+            return {"message": "Login successful", "username": admin.email or admin.username}
     raise HTTPException(status_code=401, detail="Invalid credentials")
